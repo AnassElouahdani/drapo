@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>🌍 Detection du pays et affichage du dapeau</h2>
+    <button onclick="getCountry()">Localiser</button>
+    <img src="" alt="Drapeau du pays" id="flag">
+    <p id="country"></p>
+    <script>
+        function getCountry(){
+            navigator.geolocation.getCurrentPosition(success, error);
+            function success(pos){
+                const lat = pos.coords.latitude;
+                const lon = pos.coords.longitude;
+
+                fetch(`https://api.bigdatacloud.net/data/reverse-geocode-
+client?latitude=${lat}&longitude=${lon}&localityLanguage=fr`)
+                .then(response => response.json())
+                .then(data => {
+                    let country = data.countryName;
+                    const countryCode = data.countryCode?.toLowerCase();
+                    country = country.replace(/^(le|la|les|l’|l')\s*/i, '');
+                    document.getElementById("country").textContent = "Pays :" + country;
+                    const flag = document.getElementById("flag");
+                    if (countryCode){
+                        flag.src = `https://flagcdn.com/w320/${countryCode}.png`
+                        flag.alt = `Drapeau de ${country}`;
+                        flag.style.display = "inline";
+                    }
+                    else{
+                        lag.src = "";
+                        flag.alt = "";
+                        flag.style.display = "none";
+                        document.getElementById("country").textContent += "(Drapeau non disponible)"
+                    }
+                })
+            }
+
+            function error(err){
+                document.getElementById("country").textContent = "Erreur de geolocalisation"
+            }
+        };
+    </script>
+</body>
+</html>
